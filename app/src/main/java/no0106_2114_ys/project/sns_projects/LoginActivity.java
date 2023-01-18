@@ -20,15 +20,15 @@ import com.google.firebase.auth.FirebaseUser;
 public class LoginActivity extends AppCompatActivity {
     private static final String TAG  = "signUpActivity";
     private FirebaseAuth mAuth; //FirevaseAuth 객체 선언
-    EditText emailEditText, passwordEditText, passwordCheckEditText;
+    EditText emailEditText, passwordEditText;
     Button signUpButton, loginButton;
+    private long backBtnTime = 0l;  //뒤로가기 누른 횟수 계산하기 위한 변수
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
         emailEditText = findViewById(R.id.emailEditText);
         passwordEditText = findViewById(R.id.passwordEditText);
-        passwordCheckEditText = findViewById(R.id.passwordCheckEditText);
         signUpButton = findViewById(R.id.signUpButton);
         loginButton = findViewById(R.id.loginButton);
         loginButton.setOnClickListener(onClickListener);
@@ -56,7 +56,6 @@ public class LoginActivity extends AppCompatActivity {
     private void login(){
         String email = emailEditText.getText().toString();
         String password = passwordEditText.getText().toString();
-        String passwordCheck = passwordCheckEditText.getText().toString();
         if(email.length()>0 && password.length()>0){//비밀번호와 이메일 비어있는 지 확인
             // 로그인
             // FirevaseAuth에 있는 signInUserWithEmailAndPassword는 파이어 베이스에서 로그인 할때 사용
@@ -67,12 +66,12 @@ public class LoginActivity extends AppCompatActivity {
                         public void onComplete(@NonNull Task<AuthResult> task) {
                             if (task.isSuccessful()) {
                                 // 로그인 성공시
-                                Log.d(TAG, "signInWithEmail:success");
+                                showToast("로그인에 성공 하셨습니다.");
                                 FirebaseUser user = mAuth.getCurrentUser();
                                 startMainActivity();
                             } else {
                                 // 로그인 실패시
-                                Log.w(TAG, "signInWithEmail:failure", task.getException());
+                                showToast("이메일 또는 비밀번호를 다시 확인해주세요.");
                             }
                         }
                     });
@@ -88,8 +87,24 @@ public class LoginActivity extends AppCompatActivity {
 
     private void startMainActivity(){
         Intent intent = new Intent(this, MainActivity.class);
+        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
         startActivity(intent);
-        finish();
+    }
+    @Override
+    public void onBackPressed() {//뒤로 가기 누르면 종료
+        long curTime = System.currentTimeMillis();
+        long gapTime = curTime - backBtnTime;
+
+        if(0 <= gapTime && 2000 >= gapTime) {
+            super.onBackPressed();
+            moveTaskToBack(true);
+            android.os.Process.killProcess(android.os.Process.myPid());
+            System.exit(1);
+        }
+        else {
+            backBtnTime = curTime;
+            Toast.makeText(this, "한번 더 누르면 종료됩니다.",Toast.LENGTH_SHORT).show();
+        }
     }
 
 }
