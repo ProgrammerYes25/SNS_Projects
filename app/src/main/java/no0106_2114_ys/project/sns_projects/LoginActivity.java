@@ -21,7 +21,7 @@ public class LoginActivity extends AppCompatActivity {
     private static final String TAG  = "signUpActivity";
     private FirebaseAuth mAuth; //FirevaseAuth 객체 선언
     EditText emailEditText, passwordEditText;
-    Button signUpButton, loginButton;
+    Button signUpButton, loginButton, gotoPasswordResetButton;
     private long backBtnTime = 0l;  //뒤로가기 누른 횟수 계산하기 위한 변수
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -31,27 +31,31 @@ public class LoginActivity extends AppCompatActivity {
         passwordEditText = findViewById(R.id.passwordEditText);
         signUpButton = findViewById(R.id.signUpButton);
         loginButton = findViewById(R.id.loginButton);
+        gotoPasswordResetButton = findViewById(R.id.gotoPasswordResetButton);
         loginButton.setOnClickListener(onClickListener);
         signUpButton.setOnClickListener(onClickListener);
+        gotoPasswordResetButton.setOnClickListener(onClickListener);
         mAuth = FirebaseAuth.getInstance(); //FirevaseAuth 객체 정의
     }
     View.OnClickListener onClickListener = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
             switch (v.getId()){
-                case R.id.signUpButton:
+                case R.id.signUpButton://회원가입 페이지로 이동
                     signUP();
                     break;
-                case R.id.loginButton:
+                case R.id.loginButton://로그입 하기
                     login();
+                    break;
+                case R.id.gotoPasswordResetButton://비밀번호 재설정 페이지로 가기
+                    startActivityM(PasswordResetActivity.class);
                     break;
             }
         }
     };
 
     private void signUP(){
-        Intent intent = new Intent(this, SignUpActivity.class);
-        startActivity(intent);
+        startActivityM(SignUpActivity.class);
     }
     private void login(){
         String email = emailEditText.getText().toString();
@@ -68,7 +72,7 @@ public class LoginActivity extends AppCompatActivity {
                                 // 로그인 성공시
                                 showToast("로그인에 성공 하셨습니다.");
                                 FirebaseUser user = mAuth.getCurrentUser();
-                                startMainActivity();
+                                startActivityM(MainActivity.class);
                             } else {
                                 // 로그인 실패시
                                 showToast("이메일 또는 비밀번호를 다시 확인해주세요.");
@@ -81,12 +85,12 @@ public class LoginActivity extends AppCompatActivity {
         }
     }
 
-    private void showToast(String msg) {
+    private void showToast(String msg) {    //토스트 보여주는 메소드
         Toast.makeText(this, msg,Toast.LENGTH_SHORT).show();
     }
 
-    private void startMainActivity(){
-        Intent intent = new Intent(this, MainActivity.class);
+    private void startActivityM(Class ActivityClass){//activity전환 메소드
+        Intent intent = new Intent(this, ActivityClass);
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
         startActivity(intent);
     }

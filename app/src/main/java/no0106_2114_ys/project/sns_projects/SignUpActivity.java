@@ -81,7 +81,7 @@ public class SignUpActivity extends AppCompatActivity {
         }
     }
 
-    private void showToast(String msg) {
+    private void showToast(String msg) {//토스트 보여주는 메소드
         Toast.makeText(this, msg,Toast.LENGTH_SHORT).show();
     }
     private void startLoginActivity(){

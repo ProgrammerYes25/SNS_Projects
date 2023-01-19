@@ -24,7 +24,7 @@ public class MainActivity extends AppCompatActivity {
         mAuth = FirebaseAuth.getInstance(); //FirevaseAuth 객체 정의
         FirebaseUser currentUser = mAuth.getCurrentUser();
         if(currentUser == null){    //로그인이 되어있지 않은면 SignUpActivity를 실행 시킴
-            startSignUpActivity();
+            startActivityM(LoginActivity.class);
         }
     }
     View.OnClickListener onClickListener = new View.OnClickListener() {
@@ -33,13 +33,13 @@ public class MainActivity extends AppCompatActivity {
             switch (view.getId()){
                 case R.id.logoutButton:
                     mAuth.signOut();
-                    startSignUpActivity();      //로그아웃 시키는 메소드
+                    startActivityM(LoginActivity.class);      //로그아웃 시키는 메소드
                     break;
             }
         }
     };
-    private void startSignUpActivity(){
-        Intent intent = new Intent(this, LoginActivity.class);
+    private void startActivityM(Class activityClass){ //activity전환 메소드
+        Intent intent = new Intent(this, activityClass);
         startActivity(intent);
     }
     @Override
